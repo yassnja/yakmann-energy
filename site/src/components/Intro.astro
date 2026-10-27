@@ -1,0 +1,107 @@
+---
+import SectionHead from './SectionHead.astro';
+
+const audiences = [
+  'Centres de radiologie et d’imagerie médicale',
+  'Cliniques et blocs opératoires',
+  'Hôpitaux publics et CHU',
+  'Centres de dialyse',
+  'Fournisseurs et intégrateurs d’équipements médicaux',
+];
+---
+
+<section class="section intro on-ink" id="entreprise" aria-labelledby="intro-title">
+  <div class="container">
+    <SectionHead
+      index="01"
+      kicker="L’entreprise"
+      id="intro-title"
+      title="Dans un centre d’imagerie, chaque lot technique conditionne le suivant."
+    />
+
+    <div class="intro-grid">
+      <div class="intro-text" data-reveal>
+        <p class="lead">
+          Une salle IRM n’est prête que lorsque son alimentation électrique, sa climatisation, ses parois, son sol et ses
+          finitions le sont aussi. Yakmann Energy, entreprise de travaux basée à Casablanca, réunit ces métiers — du courant
+          fort au revêtement de bloc opératoire — pour livrer des espaces de santé opérationnels.
+        </p>
+        <p>
+          Notre dossier de références couvre des centres de radiologie privés, des cliniques multidisciplinaires, des
+          centres de dialyse et des services d’imagerie hospitaliers&nbsp;: salles IRM, scanners, mammographie,
+          cathétérisme et panoramique dentaire, de Tanger à Agadir.
+        </p>
+      </div>
+
+      <div class="audience">
+        <p class="label" data-reveal>Nous intervenons pour</p>
+        <ul role="list">
+          {
+            audiences.map((a, i) => (
+              <li data-reveal style={`--i:${i + 1}`}>
+                {a}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+  .intro-text {
+    display: grid;
+    gap: var(--space-m);
+    color: var(--muted-on-ink);
+  }
+  .intro-text .lead {
+    color: var(--white);
+  }
+  .audience .label {
+    color: var(--accent);
+    margin-bottom: var(--space-s);
+  }
+  .audience li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding-block: 0.9rem;
+    border-top: 1px solid var(--line-on-ink);
+    font-size: var(--step-1);
+    font-family: var(--font-display);
+    font-stretch: 105%;
+    line-height: 1.25;
+  }
+  .audience li {
+    transition:
+      opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out),
+      padding-left 0.5s var(--ease-expo);
+  }
+  .audience li:hover {
+    padding-left: 0.4rem;
+  }
+  .audience li::before {
+    content: '';
+    flex: none;
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--accent);
+    transform: translateY(-0.15em);
+  }
+  @media (max-width: 56rem) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

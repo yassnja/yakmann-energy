@@ -1,0 +1,455 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import { projects, categoryLabels, type ProjectCategory } from '../data/projects';
+
+const featured = projects.filter((p) => p.featured);
+const categories = (Object.keys(categoryLabels) as ProjectCategory[]).filter((c) => projects.some((p) => p.category === c));
+---
+
+<section class="section projects" id="realisations" aria-labelledby="realisations-title">
+  <div class="container">
+    <SectionHead index="04" kicker="Réalisations" id="realisations-title" title="Des salles d’imagerie aux blocs opératoires.">
+      <p slot="aside">
+        Une sélection issue de notre dossier de références&nbsp;: centres de radiologie privés, cliniques, hôpitaux publics
+        et ouvrages électriques. Chaque fiche rassemble les photos de chantier et de livraison.
+      </p>
+    </SectionHead>
+
+    <ul role="list" class="featured">
+      {
+        featured.map((p, i) => (
+          <li class={`feat feat-${i + 1}`}>
+            <a href={`/realisations/${p.slug}/`} class="feat-link" data-cursor="Voir">
+              <div class="feat-media" data-tilt="5">
+                <div class="feat-mask" data-mask style={`--i:${i}`}>
+                  <div class="feat-par" data-parallax>
+                    <Image src={p.coverImage} alt="" widths={[480, 800, 1200]} sizes="(max-width: 56rem) 100vw, 50vw" />
+                  </div>
+                </div>
+                <span class="feat-glare" aria-hidden="true" />
+                <span class="label feat-count" aria-hidden="true">
+                  {String(p.photos.length).padStart(2, '0')} photos
+                </span>
+              </div>
+              <div class="feat-body">
+                <p class="label">{p.location} · {categoryLabels[p.category]}</p>
+                <h3 class="display feat-title">{p.name}</h3>
+                {p.scope && <p class="feat-scope">{p.scope.join(' · ')}</p>}
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="index" data-index>
+      <div class="index-bar">
+        <h3 class="label index-title">Index des références · {projects.length}</h3>
+        <div class="filters" role="group" aria-label="Filtrer les réalisations" data-filters hidden>
+          <button type="button" class="filter" aria-pressed="true" data-filter="all">Tout</button>
+          {
+            categories.map((c) => (
+              <button type="button" class="filter" aria-pressed="false" data-filter={c}>
+                {categoryLabels[c]}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="index-grid">
+        <ol role="list" class="rows">
+          {
+            projects.map((p, i) => (
+              <li class="row" data-category={p.category} data-slug={p.slug}>
+                <a href={`/realisations/${p.slug}/`} class="row-link" data-cursor="Voir">
+                  <span class="row-thumb">
+                    <Image src={p.coverImage} alt="" widths={[160, 320]} sizes="5rem" />
+                  </span>
+                  <span class="label row-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="row-name">{p.name}</span>
+                  <span class="row-city">{p.location}</span>
+                  <span class="label row-cat">{categoryLabels[p.category]}</span>
+                  <span class="row-arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="preview" aria-hidden="true">
+          {
+            projects.map((p, i) => (
+              <Image
+                src={p.coverImage}
+                alt=""
+                widths={[480, 720]}
+                sizes="30vw"
+                class={i === 0 ? 'is-shown' : undefined}
+                data-preview={p.slug}
+              />
+            ))
+          }
+        </div>
+      </div>
+      <p class="filter-status visually-hidden" aria-live="polite" data-filter-status></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    background: var(--paper);
+  }
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-m);
+    margin-bottom: var(--space-2xl);
+  }
+  .feat-1 {
+    grid-column: 1 / span 7;
+    grid-row: span 2;
+  }
+  .feat-2,
+  .feat-3 {
+    grid-column: 8 / -1;
+  }
+  .feat-link {
+    display: grid;
+    gap: var(--space-s);
+    height: 100%;
+    grid-template-rows: 1fr auto;
+    text-decoration: none;
+  }
+  .feat-media {
+    position: relative;
+    min-height: 14rem;
+    transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.7s var(--ease-expo);
+    transform-style: preserve-3d;
+  }
+  .feat-mask,
+  .feat-par {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .feat-par {
+    inset: -7% 0;
+  }
+  .feat-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgb(255 255 255 / 0.22), transparent 45%);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .feat-link:hover .feat-glare {
+    opacity: 1;
+  }
+  .feat-count {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    padding: 0.35rem 0.55rem;
+    background: rgb(var(--ink-rgb) / 0.78);
+    color: var(--white);
+    font-size: 0.6875rem;
+    transform: translateZ(30px);
+  }
+  .feat-1 .feat-media {
+    min-height: 30rem;
+  }
+  .feat-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease-out);
+  }
+  .feat-link:hover .feat-media img {
+    transform: scale(1.05);
+  }
+  .feat-link:hover .feat-media {
+    transition-duration: 0.2s;
+  }
+  .feat-body {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .feat-body .label {
+    color: var(--brand);
+  }
+  .feat-title {
+    font-size: var(--step-2);
+    color: var(--ink);
+  }
+  .feat-1 .feat-title {
+    font-size: var(--step-3);
+  }
+  .feat-scope {
+    color: var(--muted);
+  }
+  .feat-link:hover .feat-title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .index-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-s);
+    padding-bottom: var(--space-s);
+    border-bottom: 1px solid var(--ink);
+  }
+  .index-title {
+    color: var(--muted);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .filters[hidden] {
+    display: none;
+  }
+  .filter {
+    min-height: 2.5rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--white);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      border-color 0.25s;
+  }
+  .filter:hover {
+    border-color: var(--ink);
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--white);
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    gap: var(--space-l);
+    align-items: start;
+  }
+  .row-link {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 10rem) minmax(0, 9rem) 1.5rem;
+    align-items: baseline;
+    gap: var(--space-s);
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    position: relative;
+    transition: padding-left 0.4s var(--ease-out), color 0.25s;
+  }
+  .row-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background: var(--brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .row-link:hover,
+  .row-link:focus-visible {
+    color: var(--brand);
+    padding-left: 0.5rem;
+  }
+  .row-link:hover::before,
+  .row-link:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .row-thumb {
+    display: none;
+  }
+  .row-num {
+    color: var(--muted);
+  }
+  .row-name {
+    font-family: var(--font-display);
+    font-stretch: 108%;
+    font-weight: 560;
+    font-size: var(--step-1);
+    line-height: 1.25;
+  }
+  .row-city {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  .row-cat {
+    color: var(--muted);
+    font-size: 0.6875rem;
+  }
+  .row-arrow {
+    transition: transform 0.4s var(--ease-out);
+  }
+  .row-link:hover .row-arrow {
+    transform: translateX(4px);
+  }
+  .row[hidden] {
+    display: none;
+  }
+
+  .preview {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--ink);
+    margin-top: var(--space-s);
+  }
+  .preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: inset(100% 0 0 0);
+    transform: scale(1.12);
+    transition:
+      clip-path 0.75s var(--ease-in-out),
+      transform 1.1s var(--ease-expo);
+    z-index: 0;
+  }
+  .preview img.is-shown {
+    clip-path: inset(0 0 0 0);
+    transform: none;
+    z-index: 1;
+  }
+  .preview img.was-shown {
+    clip-path: inset(0 0 0 0);
+    z-index: 0;
+    transition: none;
+  }
+
+  @media (max-width: 62rem) {
+    .index-grid {
+      grid-template-columns: 1fr;
+    }
+    .preview {
+      display: none;
+    }
+    .row-link {
+      grid-template-columns: 4.5rem minmax(0, 1fr) 1.25rem;
+      grid-template-areas:
+        'thumb name arrow'
+        'thumb meta arrow';
+      align-items: center;
+      gap: 0.15rem var(--space-s);
+      padding-block: 0.75rem;
+    }
+    .row-thumb {
+      display: block;
+      grid-area: thumb;
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: var(--paper-2);
+    }
+    .row-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .row-num {
+      display: none;
+    }
+    .row-name {
+      grid-area: name;
+      align-self: end;
+    }
+    .row-city {
+      grid-area: meta;
+      align-self: start;
+      font-size: 0.875rem;
+    }
+    .row-cat {
+      display: none;
+    }
+    .row-arrow {
+      grid-area: arrow;
+    }
+  }
+  @media (max-width: 56rem) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+    .feat-1,
+    .feat-2,
+    .feat-3 {
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .feat-media,
+    .feat-1 .feat-media {
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-index]');
+  if (root) {
+    const rows = [...root.querySelectorAll<HTMLLIElement>('.row')];
+    const previews = [...root.querySelectorAll<HTMLImageElement>('[data-preview]')];
+    const filters = root.querySelector<HTMLElement>('[data-filters]')!;
+    const status = root.querySelector<HTMLElement>('[data-filter-status]')!;
+    const buttons = [...filters.querySelectorAll<HTMLButtonElement>('.filter')];
+    filters.hidden = false;
+
+    // L'image précédente reste dessous pendant que la nouvelle s'ouvre par-dessus
+    const preview = (slug: string | undefined) => {
+      const next = previews.find((img) => img.dataset.preview === slug);
+      if (!next || next.classList.contains('is-shown')) return;
+      previews.forEach((img) => {
+        img.classList.remove('was-shown');
+        if (img.classList.contains('is-shown')) {
+          img.classList.remove('is-shown');
+          img.classList.add('was-shown');
+        }
+      });
+      next.classList.add('is-shown');
+    };
+    rows.forEach((row) => {
+      const link = row.querySelector('a')!;
+      link.addEventListener('mouseenter', () => preview(row.dataset.slug));
+      link.addEventListener('focus', () => preview(row.dataset.slug));
+    });
+
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        let count = 0;
+        rows.forEach((row) => {
+          const show = filter === 'all' || row.dataset.category === filter;
+          row.hidden = !show;
+          if (show) count++;
+        });
+        preview(rows.find((r) => !r.hidden)?.dataset.slug);
+        status.textContent = `${count} réalisation${count > 1 ? 's' : ''} affichée${count > 1 ? 's' : ''}`;
+      }),
+    );
+  }
+</script>

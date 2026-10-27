@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ClientMarquee from '../components/ClientMarquee.astro';
+import Intro from '../components/Intro.astro';
+import Expertises from '../components/Expertises.astro';
+import ImagingRoom from '../components/ImagingRoom.astro';
+import Projects from '../components/Projects.astro';
+import References from '../components/References.astro';
+import Contact from '../components/Contact.astro';
+import { company, expertises } from '../data/company';
+import { cities } from '../data/projects';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'GeneralContractor',
+  name: company.name,
+  legalName: company.legalName,
+  slogan: company.tagline,
+  telephone: company.phone,
+  email: company.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.address.street,
+    addressLocality: company.address.city,
+    addressCountry: 'MA',
+  },
+  areaServed: cities.map((c) => ({ '@type': 'City', name: c.city })),
+  knowsAbout: expertises.flatMap((d) => d.services),
+};
+---
+
+<Base
+  title="Yakmann Energy — Travaux techniques pour centres d’imagerie, cliniques et hôpitaux"
+  description="Électricité CFO/CFA, climatisation, traitement d’air, plombage de salles de radiologie et revêtements de bloc opératoire. Yakmann Energy réalise les lots techniques des établissements de santé au Maroc."
+  jsonLd={jsonLd}
+>
+  <Hero />
+  <ClientMarquee />
+  <Intro />
+  <Expertises />
+  <ImagingRoom />
+  <Projects />
+  <References />
+  <Contact />
+</Base>

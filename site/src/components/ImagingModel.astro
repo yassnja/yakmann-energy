@@ -1,0 +1,186 @@
+---
+import RoomPrism from './RoomPrism.astro';
+const p = (u: number, v: number, z = 0) => `${480 + u - v},${300 + (u + v) / 2 - z}`;
+const wallLine = (v: number) => `${p(0, v, 0)} ${p(0, v, 220)}`;
+---
+
+<svg class="room-model" viewBox="0 0 960 720" role="img" aria-labelledby="room-model-title room-model-desc">
+  <title id="room-model-title">Une salle d’imagerie en perspective, ouverte sur ses installations</title>
+  <desc id="room-model-desc">Maquette illustrative d’une salle de radiologie : scanner et table au centre, parois ouvertes, réseaux électriques, gaines de ventilation, finitions de sol, appareil de contrôle et sécurité incendie. Six repères permettent d’explorer ces interventions.</desc>
+  <defs>
+    <linearGradient id="room-wall-left" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffffff"/><stop offset="1" stop-color="#dce5ef"/>
+    </linearGradient>
+    <linearGradient id="room-wall-right" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#ecf1f7"/><stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="room-machine" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffffff"/><stop offset="0.6" stop-color="#f7fafd"/><stop offset="1" stop-color="#c7d6e7"/>
+    </linearGradient>
+    <linearGradient id="room-ring" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#41658a"/><stop offset="0.45" stop-color="#092b5b"/><stop offset="1" stop-color="#061b36"/>
+    </linearGradient>
+    <linearGradient id="room-glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b7c9df"/><stop offset="0.5" stop-color="#eaf2fa"/><stop offset="1" stop-color="#8ea9c7"/>
+    </linearGradient>
+    <radialGradient id="room-shadow"><stop stop-color="#092b5b" stop-opacity="0.2"/><stop offset="1" stop-color="#092b5b" stop-opacity="0"/></radialGradient>
+    <pattern id="room-tiles" width="48" height="48" patternUnits="userSpaceOnUse">
+      <rect width="48" height="48" fill="#edf2f7"/>
+      <path d="M48 0H0V48" fill="none" stroke="#cfdae7" stroke-width="0.8"/>
+    </pattern>
+    <pattern id="room-lead" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#7893b0"/><path d="M0 10L10 0" stroke="#b7c9df" stroke-width="1"/>
+    </pattern>
+    <filter id="room-soft-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- Grounding shadow and a solid, chamfered foundation. -->
+  <ellipse cx="493" cy="558" rx="365" ry="140" fill="url(#room-shadow)"/>
+  <RoomPrism u={-16} v={-16} z={-22} width={382} depth={367} height={22} top="#e8eef5" front="#8ea5c0" side="#b3c3d6"/>
+  <path d={`M${p(-16,351,-22)} L${p(366,351,-22)} L${p(366,-16,-22)}`} fill="none" stroke="#092b5b" stroke-width="3"/>
+  <g transform="matrix(1 .5 -1 .5 480 300)">
+    <rect width="350" height="335" fill="url(#room-tiles)"/>
+  </g>
+
+  <!-- The back walls remain; the two walls facing the visitor are cut away. -->
+  <RoomPrism u={-10} v={-10} width={10} depth={345} height={220} top="#ffffff" front="#bdcddd" side="#d3deea"/>
+  <RoomPrism u={0} v={-10} width={350} depth={10} height={220} top="#ffffff" front="#ecf1f7" side="#b3c3d6"/>
+  <polygon points={`${p(0,0)} ${p(0,335)} ${p(0,335,220)} ${p(0,0,220)}`} fill="url(#room-wall-left)"/>
+  <polygon points={`${p(0,0)} ${p(350,0)} ${p(350,0,220)} ${p(0,0,220)}`} fill="url(#room-wall-right)"/>
+  <path d={`M${p(0,335,6)}L${p(0,0,6)}L${p(350,0,6)}`} fill="none" stroke="#a6b9cf" stroke-width="9"/>
+
+  <!-- 01: exposed protective lining, panel seams and the cut edge of the wall. -->
+  <g class="feature feature-wall" data-layer="plomb">
+    <polygon points={`${p(0,0,15)} ${p(0,335,15)} ${p(0,335,210)} ${p(0,0,210)}`} fill="currentColor" opacity="0.14"/>
+    {[66, 132, 198, 264].map(v => <polyline points={wallLine(v)} fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="1"/>)}
+    <polygon points={`${p(-10,335)} ${p(0,335)} ${p(0,335,220)} ${p(-10,335,220)}`} fill="url(#room-lead)" stroke="currentColor" stroke-width="1"/>
+    <path class="feature-line" d={`M${p(0,16,18)}L${p(0,319,18)}L${p(0,319,204)}`} fill="none" stroke="currentColor" stroke-width="3"/>
+  </g>
+
+  <!-- Observation glazing, inset in the back-right wall. -->
+  <g transform="matrix(1 .5 0 -1 480 300)">
+    <rect x="196" y="74" width="120" height="105" rx="2" fill="#9dafc5"/>
+    <rect x="201" y="79" width="110" height="95" fill="url(#room-glass)"/>
+    <path d="M207 88L278 167M218 88L289 167" stroke="#ffffff" opacity="0.55" stroke-width="4"/>
+    <path d="M256 79V174" stroke="#092b5b" stroke-width="3"/>
+    <rect x="191" y="70" width="130" height="5" fill="#092b5b"/>
+  </g>
+
+  <!-- 04: a continuous floor finish, shown as a lifted corner sample. -->
+  <g class="feature feature-floor" data-layer="sol">
+    <g transform="matrix(1 .5 -1 .5 480 300)">
+      <rect x="2" y="2" width="346" height="331" fill="currentColor" class="floor-wash"/>
+      <path d="M25 310H325V230" fill="none" stroke="currentColor" stroke-width="3"/>
+    </g>
+    <RoomPrism u={38} v={276} z={1} width={90} depth={45} height={4}/>
+    <path d={`M${p(43,287,6)}L${p(119,287,6)}M${p(43,301,6)}L${p(119,301,6)}`} stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+  </g>
+
+  <!-- 02: electrical cabinet and overhead cable tray. -->
+  <g class="feature feature-electric" data-layer="elec">
+    <RoomPrism u={6} v={240} z={48} width={20} depth={52} height={88}/>
+    <g transform="matrix(-1 .5 0 -1 266 385)">
+      <rect x="0" y="0" width="47" height="78" rx="3" fill="#092b5b" stroke="#b7c9df"/>
+      <rect x="7" y="47" width="32" height="22" rx="1" fill="#b7c9df"/>
+      {[14, 24, 34].map(y => <path d={`M8 ${y}H36`} stroke="#ffffff" stroke-width="2" opacity="0.8"/>)}
+      <circle cx="34" cy="56" r="2" fill="#ffffff"/>
+    </g>
+    <path class="current-flow" d={`M${p(26,266,140)}L${p(26,266,198)}L${p(26,25,198)}L${p(302,25,198)}`} fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <path d={`M${p(26,266,48)}L${p(26,266,5)}L${p(240,266,5)}L${p(240,170,5)}`} fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 5" opacity="0.7"/>
+    <RoomPrism u={80} v={27} z={193} width={130} depth={9} height={5} top="#ffffff" front="#ffffff" side="#cfdfef"/>
+  </g>
+
+  <!-- Equipment shadow, pedestal and dimensional scanner gantry. -->
+  <ellipse cx="573" cy="490" rx="105" ry="42" fill="#092b5b" opacity="0.1" filter="url(#room-soft-shadow)"/>
+  <RoomPrism u={176} v={72} z={0} width={65} depth={155} height={12} top="#dce5ef" front="#b3c3d6" side="#829bb6"/>
+  <g transform="matrix(-1 .5 0 -1 625 452.5)">
+    <rect x="0" y="8" width="135" height="177" rx="28" transform="translate(0 0)" fill="#b1c3d7" stroke="#819bb8"/>
+    <path d="M8 177L-25 193Q-34 188-34 167V33Q-34 13-11 0L8 8Z" fill="#dce5ef" stroke="#9aafc7" stroke-width="0.8"/>
+    <rect x="-1" y="8" width="135" height="177" rx="28" fill="url(#room-machine)" stroke="#7d96b3" stroke-width="1.2"/>
+    <rect x="22" y="157" width="88" height="5" rx="2.5" fill="#d1dfed"/>
+    <circle cx="67" cy="100" r="50" fill="#b7c9df" stroke="#ffffff" stroke-width="4"/>
+    <circle cx="67" cy="100" r="42" fill="url(#room-ring)"/>
+    <circle cx="67" cy="100" r="30" fill="#e0eaf5" stroke="#6583a6" stroke-width="2"/>
+    <path d="M37 100a30 30 0 0 1 60 0" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.8"/>
+    <circle cx="117" cy="135" r="3" fill="#41658a"/>
+    <path d="M15 40H33M15 33H27" stroke="#829bb6" stroke-width="2"/>
+  </g>
+  <RoomPrism u={305} v={132} z={0} width={30} depth={38} height={84} top="#f5f7fa" front="#c3d1e1" side="#8ea5c0"/>
+  <RoomPrism u={291} v={120} z={0} width={60} depth={62} height={8} top="#dce5ef" front="#9eb2ca" side="#829bb6"/>
+  <RoomPrism u={212} v={125} z={84} width={147} depth={48} height={10} top="#ffffff" front="#b7c9df" side="#8ea5c0"/>
+  <RoomPrism u={220} v={130} z={94} width={132} depth={38} height={7} top="#173c6a" front="#092b5b" side="#41658a"/>
+
+  <!-- 03: metallic ventilation ducts above the open ceiling. -->
+  <g class="feature feature-air" data-layer="air">
+    <path d={`M${p(40,105,223)}V${300+(40+105)/2-258}M${p(260,105,223)}V${300+(260+105)/2-258}`} stroke="#8ea5c0" stroke-width="1"/>
+    <RoomPrism u={20} v={90} z={217} width={280} depth={36} height={28}/>
+    {[70, 130, 190, 250].map(u => <path d={`M${p(u,90,245)}L${p(u,126,245)}L${p(u,126,217)}`} fill="none" stroke="#7d96b3" stroke-width="1"/>)}
+    <RoomPrism u={152} v={126} z={217} width={36} depth={72} height={28}/>
+    <RoomPrism u={149} v={182} z={204} width={42} depth={34} height={13}/>
+    <path d={`M${p(154,190,203)}L${p(184,190,203)}M${p(154,197,203)}L${p(184,197,203)}M${p(154,204,203)}L${p(184,204,203)}`} stroke="currentColor" stroke-width="2"/>
+    {[152, 168, 184].map(u => <path class="air-stream" d={`M${p(u,205,194)}q-10 20 0 38t0 38`} fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 7"/>)}
+  </g>
+
+  <!-- 06: a separate extraction branch and an overhead detector. -->
+  <g class="feature feature-fire" data-layer="smsi">
+    <RoomPrism u={268} v={14} z={188} width={44} depth={68} height={24}/>
+    <path d={`M${p(275,73,190)}L${p(305,73,190)}M${p(275,65,190)}L${p(305,65,190)}`} stroke="currentColor" stroke-width="2"/>
+    <path d={`M${p(245,164,217)}L${p(245,164,204)}`} stroke="#819bb8" stroke-width="2"/>
+    <ellipse cx="561" cy="287.5" rx="18" ry="9" fill="#b7c9df" stroke="currentColor" stroke-width="1"/>
+    <ellipse cx="561" cy="291.5" rx="13" ry="6" fill="#ffffff" stroke="currentColor" stroke-width="1"/>
+    <circle cx="561" cy="293" r="2" fill="currentColor"/>
+    <path class="detector-signal" d="M540 300q21 17 42 0M534 308q27 23 54 0" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- 05: portable radiation survey instrument, outside the cutaway. -->
+  <g class="feature feature-survey" data-layer="rx">
+    <path d="M825 437q-20-15-11-37t-19-31" fill="none" stroke="currentColor" stroke-width="2"/>
+    <g transform="translate(805 426) rotate(-8)">
+      <rect width="48" height="70" rx="8" fill="#092b5b" stroke="#41658a" stroke-width="1.5"/>
+      <rect x="7" y="10" width="34" height="24" rx="3" fill="#dce5ef"/>
+      <path d="M12 27h5l4-8 5 5h9" fill="none" stroke="#41658a" stroke-width="1.5"/>
+      <circle cx="15" cy="47" r="4" fill="#b7c9df"/><circle cx="33" cy="47" r="4" fill="#b7c9df"/>
+      <rect x="14" y="-12" width="20" height="14" rx="4" fill="#173c6a"/>
+    </g>
+    <path class="survey-signal" d="M782 387q-14 12 0 24M773 380q-24 20 0 39" fill="none" stroke="currentColor" stroke-width="2"/>
+  </g>
+
+  <!-- A small scale line anchors the illustration without suggesting construction dimensions. -->
+  <path d="M130 662H203" stroke="#9aafc7" stroke-width="1"/>
+  <path d="M130 658V666M203 658V666" stroke="#9aafc7" stroke-width="1"/>
+</svg>
+
+<style>
+  .room-model { width: 100%; height: auto; overflow: visible; }
+  .feature {
+    color: var(--accent);
+    --surface-top: #edf3f9;
+    --surface-front: #b7c9df;
+    --surface-side: #8ea5c0;
+    transition: opacity 0.35s ease, filter 0.35s ease;
+  }
+  .floor-wash { opacity: 0.04; transition: opacity 0.35s ease; }
+  :global(.has-active) .feature:not(.is-active) { opacity: 0.35; }
+  .feature.is-active {
+    color: var(--brand);
+    --surface-top: #d5e5f6;
+    --surface-front: #8eafd3;
+    --surface-side: #41658a;
+    --edge: #41658a;
+    filter: drop-shadow(0 2px 5px rgb(9 43 91 / 0.12));
+  }
+  .feature-floor.is-active .floor-wash { opacity: 0.19; }
+  .feature.is-active .feature-line { stroke-width: 5; }
+  .air-stream, .detector-signal, .survey-signal { opacity: 0.2; }
+  .is-active .air-stream, .is-active .detector-signal, .is-active .survey-signal { opacity: 0.8; }
+  @media (prefers-reduced-motion: no-preference) {
+    .is-active .air-stream { animation: room-air 1.8s linear infinite; }
+    .is-active .current-flow { stroke-dasharray: 10 5; animation: room-current 1.6s linear infinite; }
+    .is-active .detector-signal, .is-active .survey-signal { animation: room-signal 2s ease-in-out infinite; }
+  }
+  @keyframes room-air { to { stroke-dashoffset: -26; } }
+  @keyframes room-current { to { stroke-dashoffset: -30; } }
+  @keyframes room-signal { 50% { opacity: 0.25; } }
+</style>

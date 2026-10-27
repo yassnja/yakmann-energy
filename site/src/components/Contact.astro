@@ -1,0 +1,353 @@
+---
+import { company } from '../data/company';
+import { splitWords } from '../lib/split';
+import { contactDelivery } from '../data/contact';
+
+const contactAction = `https://formsubmit.co/${contactDelivery.recipient}`;
+const contactAjaxEndpoint = `https://formsubmit.co/ajax/${contactDelivery.recipient}`;
+
+const projectTypes = [
+  'Centre de radiologie / imagerie',
+  'Clinique ou bloc opératoire',
+  'Hôpital / CHU',
+  'Centre de dialyse',
+  'Installation électrique (poste MT, tableaux)',
+  'Autre',
+];
+---
+
+<section class="section contact on-ink" id="contact" aria-labelledby="contact-title">
+  <div class="container contact-grid">
+    <div class="contact-intro">
+      <header class="section-head" data-reveal>
+        <p class="label trace">06 — Contact</p>
+        <h2 class="display section-title split" id="contact-title" set:html={splitWords('Un projet de centre, de salle ou de bloc\u00a0?')} />
+      </header>
+      <p class="lead" data-reveal>
+        Décrivez-nous votre établissement, la ou les salles concernées et votre calendrier. Nous revenons vers vous pour
+        organiser une visite ou chiffrer les lots techniques.
+      </p>
+
+      <dl class="direct" data-reveal>
+        <div>
+          <dt class="label">Téléphone</dt>
+          <dd><a class="link-underline" href={company.phoneHref}>{company.phone}</a></dd>
+        </div>
+        <div>
+          <dt class="label">E-mail</dt>
+          <dd><a class="link-underline" href={`mailto:${company.email}`}>{company.email}</a></dd>
+        </div>
+        <div>
+          <dt class="label">Adresse</dt>
+          <dd>{company.address.street}, {company.address.city} — {company.address.country}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <form class="brief" data-brief action={contactAction} method="POST" data-ajax-endpoint={contactAjaxEndpoint} data-reveal style="--i:1">
+      <p class="label brief-title">Préparer votre demande</p>
+      <input type="hidden" name="_subject" value={contactDelivery.subject} />
+      <input type="hidden" name="_template" value="table" />
+      <div class="form-honeypot" aria-hidden="true">
+        <label for="f-website">Laissez ce champ vide</label>
+        <input id="f-website" name="_honey" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label for="f-name">Nom et prénom <span aria-hidden="true">*</span></label>
+        <input id="f-name" name="name" type="text" minlength="2" maxlength="100" autocomplete="name" required aria-describedby="f-name-err" />
+        <p class="error" id="f-name-err" hidden>Indiquez votre nom.</p>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-org">Établissement</label>
+          <input id="f-org" name="org" type="text" maxlength="160" autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label for="f-city">Ville</label>
+          <input id="f-city" name="city" type="text" maxlength="100" autocomplete="address-level2" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-phone">Téléphone</label>
+          <input id="f-phone" name="phone" type="tel" maxlength="40" autocomplete="tel" aria-describedby="f-reach-err" />
+        </div>
+        <div class="field">
+          <label for="f-email">E-mail</label>
+          <input id="f-email" name="email" type="email" maxlength="254" autocomplete="email" aria-describedby="f-reach-err" />
+        </div>
+      </div>
+      <p class="error" id="f-reach-err" hidden>Indiquez un téléphone ou une adresse e-mail valide pour être recontacté.</p>
+
+      <div class="field">
+        <label for="f-type">Type de projet</label>
+        <select id="f-type" name="type">
+          {projectTypes.map((t) => <option>{t}</option>)}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="f-msg">Votre projet <span aria-hidden="true">*</span></label>
+        <textarea id="f-msg" name="message" rows="5" minlength="10" maxlength="5000" required aria-describedby="f-msg-err"></textarea>
+        <p class="error" id="f-msg-err" hidden>Décrivez brièvement votre projet.</p>
+      </div>
+
+      <button type="submit" class="btn btn--light" data-magnetic="0.2">
+        <span class="btn-label">Envoyer ma demande</span><span class="arrow" aria-hidden="true">→</span>
+      </button>
+      <p class="status" role="status" aria-live="polite" aria-atomic="true" data-brief-status></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact {
+    background: var(--ink);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact::before {
+    content: '';
+    position: absolute;
+    right: -10%;
+    top: -20%;
+    width: 50%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--accent-rgb) / 0.25);
+    box-shadow:
+      0 0 0 3rem rgb(var(--accent-rgb) / 0.04),
+      0 0 0 6rem rgb(var(--accent-rgb) / 0.03);
+    pointer-events: none;
+  }
+  .contact-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+  .contact-intro {
+    display: grid;
+    gap: var(--space-l);
+    align-content: start;
+  }
+  .contact-intro .section-head {
+    margin-bottom: 0;
+  }
+  .contact-intro .lead {
+    color: var(--muted-on-ink);
+  }
+  .direct {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .direct dt {
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .direct dd {
+    font-size: var(--step-1);
+    line-height: 1.4;
+  }
+  .direct div:last-child dd {
+    font-size: var(--step-0);
+    color: var(--muted-on-ink);
+    max-width: 30rem;
+  }
+
+  .brief {
+    display: grid;
+    gap: var(--space-s);
+    align-content: start;
+    padding: var(--space-l);
+    background: var(--ink-2);
+    border: 1px solid var(--line-on-ink);
+  }
+  .brief-title {
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+  }
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-on-ink);
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgb(255 255 255 / 0.22);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.04);
+    color: var(--white);
+    transition:
+      border-color 0.25s,
+      background-color 0.25s;
+  }
+  select option {
+    color: var(--ink);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: rgb(255 255 255 / 0.4);
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--accent);
+    background: rgb(255 255 255 / 0.07);
+    outline: none;
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  [aria-invalid='true'] {
+    border-color: #ff8a80;
+    box-shadow: inset 0 0 0 1px #ff8a80;
+  }
+  .error {
+    color: #ffb4ab;
+    font-size: 0.875rem;
+  }
+  .error[hidden] {
+    display: none;
+  }
+  .brief .btn {
+    justify-self: start;
+    margin-top: 0.5rem;
+  }
+  .form-honeypot { display: none; }
+  .brief .btn:disabled { opacity: 0.7; cursor: wait; }
+  .status[data-state='error'] { border-color: #ffb4ab; color: #ffb4ab; }
+  .status:empty {
+    display: none;
+  }
+  .status {
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--accent);
+    background: rgb(var(--accent-rgb) / 0.08);
+    font-size: 0.9375rem;
+  }
+  .status a {
+    color: var(--white);
+  }
+
+  @media (max-width: 62rem) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 30rem) {
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+    .brief {
+      padding: var(--space-m);
+    }
+    .brief .btn {
+      justify-self: stretch;
+    }
+  }
+</style>
+
+<script>
+  import { contactPayload, sendContactRequest } from '../lib/contact-request';
+
+  const form = document.querySelector<HTMLFormElement>('[data-brief]');
+  if (form) {
+    form.noValidate = true;
+    const status = form.querySelector<HTMLElement>('[data-brief-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const submitLabel = submit.querySelector<HTMLElement>('.btn-label')!;
+    const el = <T extends HTMLElement>(name: string) => form.elements.namedItem(name) as unknown as T;
+    const setError = (fields: HTMLElement[], errorId: string, invalid: boolean) => {
+      fields.forEach(field => field.setAttribute('aria-invalid', String(invalid)));
+      document.getElementById(errorId)!.hidden = !invalid;
+    };
+    let sending = false;
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (sending) return;
+      status.textContent = '';
+      delete status.dataset.state;
+      const name = el<HTMLInputElement>('name');
+      const phone = el<HTMLInputElement>('phone');
+      const email = el<HTMLInputElement>('email');
+      const message = el<HTMLTextAreaElement>('message');
+      const nameBad = name.value.trim().length < 2 || !name.checkValidity();
+      const emailBad = email.value.trim() !== '' && !email.checkValidity();
+      const phoneBad = phone.value.trim() !== '' && phone.value.replace(/\D/g, '').length < 8;
+      const reachBad = emailBad || phoneBad || (email.value.trim() === '' && phone.value.trim() === '');
+      const messageBad = message.value.trim().length < 10 || !message.checkValidity();
+      setError([name], 'f-name-err', nameBad);
+      setError([phone, email], 'f-reach-err', reachBad);
+      setError([message], 'f-msg-err', messageBad);
+
+      const firstInvalid = form.querySelector<HTMLElement>('[aria-invalid="true"]');
+      if (firstInvalid) { firstInvalid.focus(); return; }
+      if (el<HTMLInputElement>('_honey').value.trim()) return;
+
+      const payload = contactPayload({
+        name: name.value,
+        org: el<HTMLInputElement>('org').value,
+        city: el<HTMLInputElement>('city').value,
+        phone: phone.value,
+        email: email.value,
+        type: el<HTMLSelectElement>('type').value,
+        message: message.value,
+      }, window.location.href);
+      const controls = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement>('input, select, textarea, button')];
+      const disabled = controls.map(control => control.disabled);
+      const originalLabel = submitLabel.textContent;
+      sending = true;
+      controls.forEach(control => { control.disabled = true; });
+      form.setAttribute('aria-busy', 'true');
+      submitLabel.textContent = 'Envoi en cours…';
+      status.textContent = 'Envoi de votre demande…';
+
+      try {
+        const result = await sendContactRequest(form.dataset.ajaxEndpoint!, payload);
+        if (result === 'activation-required') {
+          status.dataset.state = 'error';
+          status.textContent = 'Le formulaire est en cours de mise en service. Vos informations sont conservées. Veuillez réessayer plus tard.';
+        } else {
+          status.dataset.state = 'success';
+          status.textContent = 'Votre demande a bien été transmise. Notre équipe vous recontactera prochainement.';
+          form.reset();
+        }
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = 'Impossible de confirmer l’envoi. Vos informations sont conservées. Veuillez réessayer.';
+      } finally {
+        controls.forEach((control, index) => { control.disabled = disabled[index]; });
+        form.removeAttribute('aria-busy');
+        submitLabel.textContent = originalLabel;
+        sending = false;
+      }
+    });
+  }
+</script>

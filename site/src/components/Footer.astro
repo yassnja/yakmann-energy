@@ -1,0 +1,98 @@
+---
+import { Image } from 'astro:assets';
+import logoWhite from '../assets/brand/logo-white.png';
+import { company } from '../data/company';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer on-ink">
+  <div class="container">
+    <div class="top">
+      <a href="/" class="footer-brand" aria-label={`${company.name} — accueil`}>
+        <Image src={logoWhite} alt="" width={180} densities={[1, 2]} />
+      </a>
+      <nav aria-label="Navigation de pied de page">
+        <ul role="list" class="footer-nav">
+          <li><a class="link-underline" href="/#expertises">Expertises</a></li>
+          <li><a class="link-underline" href="/#imagerie">Salles d’imagerie</a></li>
+          <li><a class="link-underline" href="/#realisations">Réalisations</a></li>
+          <li><a class="link-underline" href="/#references">Références</a></li>
+          <li><a class="link-underline" href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <address class="footer-contact">
+        <a class="link-underline" href={company.phoneHref}>{company.phone}</a>
+        <a class="link-underline" href={`mailto:${company.email}`}>{company.email}</a>
+        <span>{company.address.street}<br />{company.address.city} — {company.address.country}</span>
+      </address>
+    </div>
+    <div class="bottom">
+      <p>© {year} {company.legalName}</p>
+      <p class="legal label">
+        {company.legal.map((l) => <span>{l.label} {l.value}</span>)}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink-deep);
+    border-top: 1px solid var(--line-on-ink);
+    color: var(--muted-on-ink);
+    padding-block: var(--space-xl) var(--space-l);
+    font-size: 0.9375rem;
+  }
+  .top {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: 1.2fr 1fr 1.4fr;
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--line-on-ink);
+  }
+  .footer-brand {
+    width: 180px;
+  }
+  .footer-nav {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .footer-nav a,
+  .footer-contact a {
+    color: var(--white);
+    justify-self: start;
+  }
+  .footer-contact {
+    display: grid;
+    gap: 0.6rem;
+    font-style: normal;
+    align-content: start;
+  }
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-top: var(--space-m);
+  }
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.6875rem;
+  }
+  @media (max-width: 56rem) {
+    .top {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 30rem) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

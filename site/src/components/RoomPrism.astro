@@ -1,0 +1,21 @@
+---
+/** Rectangular volume in the room's shared isometric coordinate system. */
+interface Props {
+  u: number; v: number; z?: number;
+  width: number; depth: number; height: number;
+  top?: string; front?: string; side?: string;
+}
+const { u, v, z = 0, width: w, depth: d, height: h,
+  top = 'var(--surface-top, #f8fafc)',
+  front = 'var(--surface-front, #c9d7e6)',
+  side = 'var(--surface-side, #a3b7cd)',
+} = Astro.props;
+const p = (x: number, y: number, elevation: number) => `${480 + x - y},${300 + (x + y) / 2 - elevation}`;
+const a = p(u, v, z + h), b = p(u + w, v, z + h), c = p(u + w, v + d, z + h), e = p(u, v + d, z + h);
+const bb = p(u + w, v, z), cb = p(u + w, v + d, z), eb = p(u, v + d, z);
+---
+<g class="room-prism" stroke="var(--edge, #829bb6)" stroke-width="0.7" stroke-linejoin="round">
+  <polygon points={`${b} ${c} ${cb} ${bb}`} fill={side} />
+  <polygon points={`${e} ${c} ${cb} ${eb}`} fill={front} />
+  <polygon points={`${a} ${b} ${c} ${e}`} fill={top} />
+</g>

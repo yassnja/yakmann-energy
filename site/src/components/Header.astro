@@ -1,0 +1,293 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
+import { company } from '../data/company';
+
+const links = [
+  { href: '/#expertises', label: 'Expertises' },
+  { href: '/#imagerie', label: 'Salles d’imagerie' },
+  { href: '/#realisations', label: 'Réalisations' },
+  { href: '/#references', label: 'Références' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container bar">
+    <a class="brand" href="/" aria-label={`${company.name} — accueil`}>
+      <Image src={logo} alt="" width={110} densities={[1, 2]} loading="eager" />
+    </a>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <ul role="list" class="nav-list">
+        {
+          links.map((l) => (
+            <li>
+              <a class="nav-link" href={l.href}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a class="btn header-cta" href="/#contact" data-magnetic="0.25">
+      <span class="btn-label">Parler de votre projet</span><span class="arrow" aria-hidden="true">→</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-mobile" data-menu-toggle>
+      <span class="visually-hidden" data-menu-label>Ouvrir le menu</span>
+      <span class="burger" aria-hidden="true"><span></span><span></span></span>
+    </button>
+  </div>
+
+  <div class="menu" id="menu-mobile" data-menu hidden>
+    <nav aria-label="Navigation mobile" class="container menu-inner">
+      <ol role="list" class="menu-list">
+        {
+          [...links, { href: '/#contact', label: 'Contact' }].map((l, i) => (
+            <li>
+              <a href={l.href} class="menu-link display" data-menu-link>
+                <span class="label">{String(i + 1).padStart(2, '0')}</span>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="menu-contact">
+        <a class="link-underline" href={company.phoneHref}>{company.phone}</a>
+        <a class="link-underline" href={`mailto:${company.email}`}>{company.email}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.3s,
+      box-shadow 0.3s;
+  }
+  .site-header.is-scrolled {
+    background: rgb(245 247 250 / 0.96);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .site-header.is-hidden:not(.menu-open) {
+    transform: translateY(-100%);
+  }
+  .bar {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: var(--space-l);
+  }
+  .brand {
+    flex: none;
+    display: block;
+    width: clamp(96px, 8vw, 110px);
+  }
+  .brand img {
+    width: 100%;
+    max-height: calc(var(--header-h) - 1rem);
+    object-fit: contain;
+  }
+  .nav {
+    margin-left: auto;
+  }
+  .nav-list {
+    display: flex;
+    gap: clamp(1rem, 2vw, 2.25rem);
+  }
+  .nav-link {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2rem;
+    height: 1px;
+    background: var(--brand);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .nav-link:hover::after,
+  .nav-link[aria-current='true']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .nav-link[aria-current='true'] {
+    color: var(--brand);
+  }
+  .header-cta {
+    min-height: 2.75rem;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9375rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    margin-left: auto;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--white);
+    place-items: center;
+  }
+  .burger {
+    display: grid;
+    gap: 6px;
+    width: 18px;
+  }
+  .burger span {
+    display: block;
+    height: 2px;
+    background: var(--ink);
+    transition: transform 0.4s var(--ease-out);
+  }
+  [aria-expanded='true'] .burger span:first-child {
+    transform: translateY(4px) rotate(45deg);
+  }
+  [aria-expanded='true'] .burger span:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+
+  .menu {
+    position: fixed;
+    inset: var(--header-h) 0 0;
+    background: var(--paper);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .menu:not([hidden]) {
+    animation: menu-in 0.45s var(--ease-out);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.75rem);
+    }
+  }
+  .menu-inner {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-l) var(--space-xl);
+  }
+  .menu-list {
+    border-top: 1px solid var(--line);
+  }
+  .menu-link {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step-3);
+    text-decoration: none;
+  }
+  .menu-link .label {
+    color: var(--brand);
+  }
+  .menu-contact {
+    display: grid;
+    gap: 0.75rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 62rem) {
+    .nav,
+    .header-cta {
+      display: none;
+    }
+    .menu-toggle {
+      display: grid;
+    }
+  }
+  @media (min-width: 62.001rem) {
+    .menu {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const label = header.querySelector<HTMLElement>('[data-menu-label]')!;
+  const menu = header.querySelector<HTMLElement>('[data-menu]')!;
+
+  // État du header au défilement : fond plein, masqué en descendant, visible en remontant.
+  let lastY = window.scrollY;
+  let ticking = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    header.classList.toggle('is-scrolled', y > 8);
+    header.classList.toggle('is-hidden', y > 400 && y > lastY);
+    lastY = y;
+    ticking = false;
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        requestAnimationFrame(onScroll);
+        ticking = true;
+      }
+    },
+    { passive: true },
+  );
+  onScroll();
+
+  // Menu mobile
+  const setOpen = (open: boolean) => {
+    toggle.setAttribute('aria-expanded', String(open));
+    label.textContent = open ? 'Fermer le menu' : 'Ouvrir le menu';
+    menu.hidden = !open;
+    header.classList.toggle('menu-open', open);
+    header.classList.toggle('is-scrolled', open || window.scrollY > 8);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) menu.querySelector<HTMLElement>('a')?.focus();
+  };
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  window.matchMedia('(min-width: 62.001rem)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+
+  // Lien actif selon la section qui occupe le milieu de l'écran (page d'accueil uniquement)
+  const navLinks = [...header.querySelectorAll<HTMLAnchorElement>('.nav-link')];
+  const sections = navLinks.map((a) => document.getElementById(a.hash.slice(1)));
+  const spy = () => {
+    const mid = window.innerHeight / 2;
+    const active = sections.findIndex((s) => {
+      const r = s?.getBoundingClientRect();
+      return r !== undefined && r.top <= mid && r.bottom > mid;
+    });
+    navLinks.forEach((a, i) => (i === active ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+  };
+  if (sections.some(Boolean)) {
+    window.addEventListener('scroll', () => requestAnimationFrame(spy), { passive: true });
+    spy();
+  }
+</script>

@@ -1,0 +1,528 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import { expertises, serviceCount } from '../data/company';
+import { projectPhoto } from '../data/projects';
+---
+
+<section class="section expertises" id="expertises" aria-labelledby="expertises-title">
+  <div class="container">
+    <SectionHead
+      index="02"
+      kicker="Expertises"
+      id="expertises-title"
+      title={`${serviceCount} prestations, quatre domaines, un seul interlocuteur.`}
+    >
+      <p slot="aside">
+        Des lots que l’on confie souvent à plusieurs entreprises. Les coordonner sous une même responsabilité, c’est réduire
+        les interfaces et les reprises sur chantier.
+      </p>
+    </SectionHead>
+
+    <div class="explorer" data-explorer data-reveal>
+      {
+        expertises.map((d, i) => (
+          <>
+            <h3 class="svc-head" style={`--row:${i + 1}`}>
+              <button
+                type="button"
+                class:list={['svc-tab', { 'is-active': i === 0 }]}
+                id={`svc-tab-${d.id}`}
+                aria-expanded={i === 0 ? 'true' : 'false'}
+                aria-controls={`svc-panel-${d.id}`}
+                data-tab={i}
+              >
+                <span class="label svc-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class={`svc-icon icon-${d.id}`} aria-hidden="true">
+                  {d.id === 'energie' && (
+                    <svg viewBox="0 0 48 48">
+                      <circle class="ic-ring" cx="24" cy="24" r="21" />
+                      <path class="ic-draw" pathLength="1" d="M27 6 13 27h10l-3 15 15-21H25z" />
+                    </svg>
+                  )}
+                  {d.id === 'air' && (
+                    <svg viewBox="0 0 48 48">
+                      <path class="ic-flow" d="M4 15c8-6 14 6 22 0s14-6 18 0" />
+                      <path class="ic-flow f2" d="M4 25c8-6 14 6 22 0s14-6 18 0" />
+                      <path class="ic-flow f3" d="M4 35c8-6 14 6 22 0s14-6 18 0" />
+                    </svg>
+                  )}
+                  {d.id === 'imagerie' && (
+                    <svg viewBox="0 0 48 48">
+                      <path class="ic-draw" pathLength="1" d="M24 4 40 10v12c0 11-7 18-16 22C15 40 8 33 8 22V10z" />
+                      <circle class="ic-core" cx="24" cy="23" r="3" />
+                      <circle class="ic-wave" cx="24" cy="23" r="8" />
+                      <circle class="ic-wave w2" cx="24" cy="23" r="8" />
+                    </svg>
+                  )}
+                  {d.id === 'finitions' && (
+                    <svg viewBox="0 0 48 48">
+                      <path class="ic-layer l1" d="M24 30 6 22l18-8 18 8z" />
+                      <path class="ic-layer l2" d="M24 30 6 22l18-8 18 8z" />
+                      <path class="ic-layer l3" d="M24 30 6 22l18-8 18 8z" />
+                    </svg>
+                  )}
+                </span>
+                <span class="display svc-title">{d.title}</span>
+                <span class="label svc-count">{d.services.length} lots</span>
+                <span class="svc-meter" aria-hidden="true" />
+              </button>
+            </h3>
+
+            <div
+              class:list={['svc-panel', { 'is-active': i === 0 }]}
+              id={`svc-panel-${d.id}`}
+              role="region"
+              aria-labelledby={`svc-tab-${d.id}`}
+              data-panel={i}
+            >
+              <div class="svc-inner">
+                <div class="svc-media">
+                  <Image
+                    src={projectPhoto(d.image.project, d.image.index)}
+                    alt={d.image.alt}
+                    widths={[480, 760, 1100]}
+                    sizes="(max-width: 62rem) 100vw, 46vw"
+                  />
+                </div>
+                <div class="svc-body">
+                  <p class="svc-lead">{d.lead}</p>
+                  <ul role="list" class="services">
+                    {d.services.map((s, j) => (
+                      <li style={`--i:${j}`}>{s}</li>
+                    ))}
+                  </ul>
+                  {d.proof && (
+                    <p class="proof">
+                      {d.proof.map((p, j) => (
+                        <span class="label" style={`--i:${d.services.length + j}`}>
+                          {p}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .explorer {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+    grid-template-rows: repeat(4, auto) 1fr;
+    column-gap: var(--space-xl);
+    border-top: 1px solid var(--ink);
+  }
+  .svc-head {
+    grid-column: 1;
+    grid-row: var(--row);
+    margin: 0;
+    font: inherit;
+  }
+  .svc-tab {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem 3rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-s);
+    width: 100%;
+    padding: var(--space-m) 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    background: none;
+    text-align: left;
+    color: var(--muted);
+    transition: color 0.4s var(--ease-expo);
+  }
+  .svc-tab:hover,
+  .svc-tab.is-active {
+    color: var(--ink);
+  }
+  .svc-num {
+    color: var(--brand);
+  }
+  .svc-title {
+    font-size: var(--step-2);
+    transition: transform 0.5s var(--ease-expo);
+  }
+  .svc-tab:hover .svc-title,
+  .svc-tab.is-active .svc-title {
+    transform: translateX(0.35rem);
+  }
+  .svc-count {
+    color: var(--muted);
+    font-size: 0.6875rem;
+  }
+  /* Le « courant » parcourt l'onglet actif */
+  .svc-meter {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-expo);
+  }
+  .svc-tab.is-active .svc-meter {
+    transform: scaleX(1);
+  }
+  .explorer.is-auto .svc-tab.is-active .svc-meter {
+    transition: transform var(--auto, 6s) linear;
+  }
+  .explorer.is-auto .svc-tab.is-active.is-restarting .svc-meter {
+    transition: none;
+    transform: scaleX(0);
+  }
+
+  /* Icônes animées */
+  .svc-icon {
+    width: 3rem;
+    height: 3rem;
+    color: currentColor;
+  }
+  .svc-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    overflow: visible;
+  }
+  .svc-tab.is-active .svc-icon {
+    color: var(--brand);
+  }
+  .ic-ring {
+    stroke-dasharray: 4 6;
+    opacity: 0.35;
+  }
+  .ic-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  .ic-core {
+    fill: currentColor;
+    stroke: none;
+  }
+  .ic-wave {
+    opacity: 0;
+    transform-origin: 24px 23px;
+  }
+  .ic-flow {
+    stroke-dasharray: 10 6;
+  }
+  .ic-layer {
+    fill: var(--paper);
+    transition: transform 0.6s var(--ease-expo);
+  }
+  .svc-tab:hover .l1,
+  .svc-tab.is-active .l1 {
+    transform: translateY(8px);
+  }
+  .svc-tab:hover .l3,
+  .svc-tab.is-active .l3 {
+    transform: translateY(-8px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .svc-tab.is-active .ic-draw {
+      animation: draw 1.2s var(--ease-expo) both;
+    }
+    .svc-tab.is-active .ic-ring {
+      animation: spin 9s linear infinite;
+      transform-origin: 24px 24px;
+    }
+    .svc-tab.is-active .ic-flow,
+    .svc-tab:hover .ic-flow {
+      animation: flow 1.4s linear infinite;
+    }
+    .svc-tab.is-active .ic-flow.f2 {
+      animation-duration: 1.1s;
+    }
+    .svc-tab.is-active .ic-flow.f3 {
+      animation-duration: 1.7s;
+    }
+    .svc-tab.is-active .ic-wave {
+      animation: emit 2s var(--ease-out) infinite;
+    }
+    .svc-tab.is-active .ic-wave.w2 {
+      animation-delay: 1s;
+    }
+  }
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -32;
+    }
+  }
+  @keyframes emit {
+    from {
+      opacity: 0.9;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.6);
+    }
+  }
+
+  /* Panneaux : superposés dans la colonne de droite sur grand écran */
+  .svc-panel {
+    grid-column: 2;
+    grid-row: 1 / span 5;
+    padding-top: var(--space-l);
+    visibility: hidden;
+    transition: visibility 0s 0.7s;
+  }
+  .svc-panel.is-active {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .svc-inner {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .svc-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    background: var(--paper-2);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.9s var(--ease-in-out);
+  }
+  .svc-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.15);
+    transition: transform 1.4s var(--ease-expo);
+  }
+  .svc-panel.is-active .svc-media {
+    clip-path: inset(0 0 0 0);
+  }
+  .svc-panel.is-active .svc-media img {
+    transform: none;
+  }
+  .svc-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-m);
+    align-items: start;
+  }
+  .svc-lead,
+  .services li,
+  .proof span {
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity 0.4s,
+      transform 0.4s;
+  }
+  .svc-panel.is-active .svc-lead,
+  .svc-panel.is-active .services li,
+  .svc-panel.is-active .proof span {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s var(--ease-expo),
+      transform 0.9s var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * 60ms + 350ms);
+  }
+  .svc-panel.is-active .svc-lead {
+    transition-delay: 250ms;
+  }
+  .svc-lead {
+    color: var(--muted);
+  }
+  .services li {
+    position: relative;
+    padding: 0.55rem 0 0.55rem 1.5rem;
+    border-bottom: 1px dashed var(--line);
+    line-height: 1.4;
+  }
+  .services li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.05rem;
+    width: 0.75rem;
+    height: 1px;
+    background: var(--brand);
+  }
+  .proof {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .proof span {
+    padding: 0.4rem 0.6rem;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 0.6875rem;
+  }
+
+  /* Accordéon sur tablette et mobile */
+  @media (max-width: 62rem) {
+    .explorer {
+      grid-template-columns: 1fr;
+      grid-template-rows: none;
+    }
+    .svc-head,
+    .svc-panel {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .svc-tab {
+      grid-template-columns: 2rem 2.5rem minmax(0, 1fr) auto;
+    }
+    .svc-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    .svc-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      padding-top: 0;
+      transition:
+        grid-template-rows 0.7s var(--ease-expo),
+        visibility 0s 0.7s;
+    }
+    .svc-panel.is-active {
+      grid-template-rows: 1fr;
+      transition:
+        grid-template-rows 0.7s var(--ease-expo),
+        visibility 0s 0s;
+    }
+    .svc-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+    .svc-panel.is-active .svc-inner {
+      padding-block: var(--space-m) var(--space-l);
+    }
+    .svc-body {
+      grid-template-columns: 1fr;
+    }
+    .proof {
+      grid-column: auto;
+    }
+  }
+  @media (max-width: 30rem) {
+    .svc-count {
+      display: none;
+    }
+    .svc-tab {
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+    }
+    .svc-num {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-lead,
+    .services li,
+    .proof span {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const explorer = document.querySelector<HTMLElement>('[data-explorer]');
+  if (explorer) {
+    const tabs = [...explorer.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = [...explorer.querySelectorAll<HTMLElement>('[data-panel]')];
+    const desktop = window.matchMedia('(min-width: 62.001rem)');
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const AUTO_MS = 6000;
+    let current = 0;
+    let autoTimer = 0;
+    let autoStopped = reduced.matches || !fine.matches;
+
+    const activate = (i: number, { toggle = false } = {}) => {
+      // Sur mobile, un second appui referme le panneau
+      const closing = toggle && !desktop.matches && i === current && tabs[i].getAttribute('aria-expanded') === 'true';
+      current = i;
+      tabs.forEach((t, j) => {
+        const on = j === i && !closing;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-expanded', String(on));
+      });
+      panels.forEach((p, j) => p.classList.toggle('is-active', j === i && !closing));
+    };
+
+    const stopAuto = () => {
+      autoStopped = true;
+      explorer.classList.remove('is-auto');
+      window.clearTimeout(autoTimer);
+    };
+    const scheduleAuto = () => {
+      if (autoStopped || !desktop.matches) return;
+      explorer.classList.add('is-auto');
+      explorer.style.setProperty('--auto', `${AUTO_MS}ms`);
+      const tab = tabs[current];
+      tab.classList.add('is-restarting');
+      void tab.offsetWidth; // relance la jauge
+      tab.classList.remove('is-restarting');
+      autoTimer = window.setTimeout(() => {
+        activate((current + 1) % tabs.length);
+        scheduleAuto();
+      }, AUTO_MS);
+    };
+
+    let hoverTimer = 0;
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        stopAuto();
+        activate(i, { toggle: true });
+      });
+      tab.addEventListener('pointerenter', () => {
+        if (!fine.matches || !desktop.matches) return;
+        hoverTimer = window.setTimeout(() => {
+          stopAuto();
+          activate(i);
+        }, 90);
+      });
+      tab.addEventListener('pointerleave', () => window.clearTimeout(hoverTimer));
+      tab.addEventListener('keydown', (e) => {
+        const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        stopAuto();
+        const next = (i + step + tabs.length) % tabs.length;
+        tabs[next].focus();
+        activate(next);
+      });
+    });
+    explorer.addEventListener('focusin', stopAuto);
+
+    // Défilement automatique uniquement lorsque la section est visible
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) scheduleAuto();
+        else window.clearTimeout(autoTimer);
+      },
+      { threshold: 0.4 },
+    ).observe(explorer);
+  }
+</script>

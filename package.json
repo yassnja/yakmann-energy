@@ -1,0 +1,11 @@
+{
+  "name": "vitrine",
+  "private": true,
+  "description": "Raccourcis : le site Yakmann Energy se trouve dans ./site",
+  "scripts": {
+    "postinstall": "npm --prefix site install",
+    "dev": "npm --prefix site run dev",
+    "build": "npm --prefix site run build",
+    "preview": "npm --prefix site run preview"
+  }
+}

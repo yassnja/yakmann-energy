@@ -1,0 +1,27 @@
+---
+import { splitWords } from '../lib/split';
+
+interface Props {
+  index: string;
+  kicker: string;
+  id: string;
+  title: string;
+}
+const { index, kicker, id, title } = Astro.props;
+---
+
+<header class="section-head" data-reveal>
+  <p class="label trace">{index} — {kicker}</p>
+  <h2 class="display section-title split" id={id} set:html={splitWords(title)} />
+  {Astro.slots.has('aside') && <div class="section-aside"><slot name="aside" /></div>}
+</header>
+
+<style>
+  .section-aside {
+    max-width: 40rem;
+    color: var(--muted);
+  }
+  :global(.on-ink) .section-aside {
+    color: var(--muted-on-ink);
+  }
+</style>

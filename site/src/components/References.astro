@@ -1,0 +1,212 @@
+---
+import SectionHead from './SectionHead.astro';
+import ClientLogo from './ClientLogo.astro';
+import { clients } from '../data/clients';
+import { cities } from '../data/projects';
+---
+
+<section class="section refs" id="references" aria-labelledby="references-title">
+  <div class="container">
+    <SectionHead
+      index="05"
+      kicker="Références & présence"
+      id="references-title"
+      title="Des groupes d’imagerie aux CHU, ils nous ont confié leurs projets."
+    >
+      <p slot="aside">
+        Établissements de santé, institutions et partenaires figurant dans notre dossier de références 2026.
+      </p>
+    </SectionHead>
+
+    <ul role="list" class="logos">
+      {
+        clients.map((c, i) => (
+          <li class="logo-tile" data-reveal style={`--i:${i % 6};--h:${c.height}px`}>
+            <span class="frame" aria-hidden="true" />
+            <ClientLogo src={c.logo} alt={c.name} height={c.height} class="logo-img" />
+            <span class="label logo-name" aria-hidden="true">
+              {c.name}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h3 class="label trace cities-title" data-reveal>{cities.length} villes, de Tanger à Agadir</h3>
+    <ul role="list" class="cities">
+      {
+        cities.map((c, i) => (
+          <li class="city" data-reveal style={`--i:${i % 4}`}>
+            <span class="city-name display">{c.city}</span>
+            <span class="label city-count">
+              {String(c.projects.length).padStart(2, '0')} réf.
+            </span>
+            <span class="city-list">{c.projects.map((p) => p.name).join(' · ')}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+  </div>
+</section>
+
+<style>
+  .refs {
+    background: var(--white);
+  }
+  .cities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--line);
+  }
+  .city {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+    align-content: start;
+    padding: var(--space-m);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition: background-color 0.3s;
+  }
+  .city:hover {
+    background: var(--paper);
+  }
+  .city-name {
+    font-size: var(--step-2);
+    color: var(--ink);
+  }
+  .city-count {
+    color: var(--brand);
+    white-space: nowrap;
+    padding-top: 0.5rem;
+  }
+  .city-list {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  /* Mur de logos : tuiles blanches, logos toujours en couleur */
+  .logos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr));
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--line);
+    margin-bottom: var(--space-2xl);
+  }
+  .logo-tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 2;
+    padding: var(--space-m) var(--space-m) var(--space-l);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+    transition: background-color 0.4s var(--ease-expo);
+  }
+  .logo-tile :global(.logo-img) {
+    display: block;
+    width: auto;
+    height: var(--h, auto);
+    max-width: 100%;
+    max-height: 4.25rem;
+    object-fit: contain;
+    filter: none;
+    opacity: 1;
+    transition:
+      filter 0.5s var(--ease-expo),
+      opacity 0.5s var(--ease-expo),
+      transform 0.6s var(--ease-expo);
+  }
+  .logo-name {
+    position: absolute;
+    left: var(--space-s);
+    right: var(--space-s);
+    bottom: 0.75rem;
+    color: var(--muted);
+    font-size: 0.625rem;
+    line-height: 1.35;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(0.35rem);
+    transition:
+      opacity 0.4s var(--ease-expo),
+      transform 0.5s var(--ease-expo);
+  }
+  /* Repères d'angle, comme une mise au point */
+  .frame {
+    position: absolute;
+    pointer-events: none;
+    inset: 0.75rem;
+    --c: var(--accent);
+    background:
+      linear-gradient(var(--c), var(--c)) top left / 12px 1px,
+      linear-gradient(var(--c), var(--c)) top left / 1px 12px,
+      linear-gradient(var(--c), var(--c)) top right / 12px 1px,
+      linear-gradient(var(--c), var(--c)) top right / 1px 12px,
+      linear-gradient(var(--c), var(--c)) bottom left / 12px 1px,
+      linear-gradient(var(--c), var(--c)) bottom left / 1px 12px,
+      linear-gradient(var(--c), var(--c)) bottom right / 12px 1px,
+      linear-gradient(var(--c), var(--c)) bottom right / 1px 12px;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 0.35s var(--ease-expo),
+      transform 0.6s var(--ease-expo);
+  }
+  .logo-tile:hover {
+    background: var(--paper);
+  }
+  .logo-tile:hover :global(.logo-img) {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-0.4rem);
+  }
+  .logo-tile:hover .logo-name {
+    opacity: 1;
+    transform: none;
+  }
+  .logo-tile:hover .frame {
+    opacity: 1;
+    transform: none;
+  }
+  /* Écrans tactiles : pas de survol, logos en couleur et nom toujours visible */
+  @media (hover: none) {
+    .logo-tile {
+      aspect-ratio: auto;
+      min-height: 9rem;
+      align-content: center;
+      gap: 0.75rem;
+      padding: var(--space-m) var(--space-s);
+    }
+    .logo-tile :global(.logo-img) {
+      filter: none;
+      opacity: 1;
+    }
+    .logo-name {
+      position: static;
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (max-width: 30rem) {
+    .logos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .logo-tile {
+      padding: var(--space-s) var(--space-s) var(--space-l);
+    }
+    .logo-tile :global(.logo-img) {
+      max-height: 3.25rem;
+    }
+  }
+
+  .cities-title {
+    margin-bottom: var(--space-m);
+  }
+</style>

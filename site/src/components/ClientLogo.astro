@@ -1,0 +1,23 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  height: number;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { src, alt, height, class: className, loading = 'lazy' } = Astro.props;
+const width = Math.round((src.width / src.height) * height);
+---
+
+{
+  src.format === 'svg' ? (
+    <img src={src.src} alt={alt} width={width} height={height} class={className} loading={loading} decoding="async" />
+  ) : (
+    <Image src={src} alt={alt} height={height} width={width} densities={[1, 2]} class={className} loading={loading} />
+  )
+}

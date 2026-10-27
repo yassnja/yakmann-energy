@@ -1,0 +1,202 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import ImagingModel from './ImagingModel.astro';
+import { projectPhoto } from '../data/projects';
+
+const layers = [
+  { id: 'plomb', title: 'Plombage des parois', location: 'Dans les murs', text: 'Une protection au plomb intégrée aux parois des salles de radiologie concernées.', x: 29, y: 40 },
+  { id: 'elec', title: 'Courant fort & courant faible', location: 'Du tableau aux équipements', text: 'L’alimentation des appareils, l’éclairage et les réseaux nécessaires au fonctionnement de la salle.', x: 16.5, y: 56 },
+  { id: 'air', title: 'Climatisation & traitement d’air', location: 'Au-dessus du plafond', text: 'Les gaines distribuent l’air et participent à l’évacuation de la chaleur des équipements.', x: 48.5, y: 17.5 },
+  { id: 'sol', title: 'Revêtements de sol & muraux', location: 'Sur les surfaces de la salle', text: 'Les finitions de sol et de parois adaptées au projet, avec les revêtements spécifiques prévus pour les blocs opératoires.', x: 42, y: 81 },
+  { id: 'rx', title: 'Contrôle des fuites de rayons X', location: 'Autour de la salle', text: 'La protection radiologique est vérifiée autour des salles utilisant les rayons X.', x: 87.5, y: 56 },
+  { id: 'smsi', title: 'Désenfumage & SMSI', location: 'Dans les réseaux de sécurité', text: 'Le désenfumage, les asservissements et le système de mise en sécurité incendie complètent les installations.', x: 71.5, y: 31 },
+];
+const photos = [
+  { slug: 'les-lumieres', index: 3, caption: 'Parois en cours de plombage — Les Lumières, Casablanca' },
+  { slug: 'al-hadika', index: 4, caption: 'Salle IRM livrée — Al Hadika, Casablanca' },
+  { slug: 'chu-oujda', index: 3, caption: 'Salle de cathétérisme — CHU Oujda' },
+];
+---
+
+<section class="section imaging" id="imagerie" aria-labelledby="imagerie-title">
+  <div class="container">
+    <SectionHead index="03" kicker="Spécialité" id="imagerie-title" title="Une salle. Six expertises réunies.">
+      <p slot="aside">Derrière une salle d’imagerie, plusieurs métiers travaillent ensemble. Entrez dans la maquette pour découvrir où et comment nous intervenons.</p>
+    </SectionHead>
+
+    <div class="imaging-explorer" data-room-explorer data-reveal>
+      <div class="model-panel">
+        <div class="model-toolbar">
+          <p class="label model-kicker"><span aria-hidden="true"></span>La salle en perspective</p>
+          <button class="overview" type="button" data-room-overview aria-pressed="true">Vue d’ensemble <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="model-stage">
+          <div class="model-aura" aria-hidden="true"></div>
+          <ImagingModel />
+          <div class="hotspots" role="group" aria-label="Explorer les six interventions dans la maquette">
+            {layers.map((layer, i) => (
+              <button type="button" class="hotspot" data-room-target={layer.id} aria-label={`${i + 1}. ${layer.title}`} aria-pressed="false" aria-controls={`room-detail-${layer.id}`} aria-describedby={`room-detail-${layer.id}`} style={`--x:${layer.x}%;--y:${layer.y}%`}>
+                <span aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="model-caption">
+          <span class="caption-symbol" aria-hidden="true">↗</span>
+          <div>
+            <p class="caption-title" data-room-caption-title>Les installations prennent leur place.</p>
+            <p class="caption-text" data-room-caption-text>Sélectionnez un numéro pour explorer une intervention.</p>
+          </div>
+        </div>
+        <p class="model-note">Vue illustrative d’une salle de radiologie. Les installations sont adaptées à chaque projet et à chaque équipement.</p>
+      </div>
+
+      <div class="explorer-controls">
+        <div class="controls-head">
+          <p class="label">De la structure aux finitions</p>
+          <h3>Chaque métier a sa place.</h3>
+          <p>Choisissez un repère sur la maquette ou une expertise ci-dessous.</p>
+        </div>
+        <ol role="list" class="room-legend">
+          {layers.map((layer, i) => (
+            <li>
+              <button type="button" class="room-choice" data-room-target={layer.id} aria-pressed="false" aria-controls={`room-detail-${layer.id}`}>
+                <span class="choice-number" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="choice-body">
+                  <span class="choice-title">{layer.title}</span>
+                  <span class="choice-location">{layer.location}</span>
+                  <span class="choice-detail" id={`room-detail-${layer.id}`}>{layer.text}</span>
+                </span>
+                <span class="choice-arrow" aria-hidden="true">↗</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <p class="explorer-footnote"><span aria-hidden="true">↳</span> Six interventions complémentaires, une vision d’ensemble.</p>
+      </div>
+    </div>
+
+    <div class="real-projects-head" data-reveal>
+      <p class="label">De la maquette au chantier</p>
+      <span>Quelques réalisations de notre dossier de références.</span>
+    </div>
+    <ul role="list" class="photo-strip">
+      {photos.map((photo, i) => (
+        <li data-reveal style={`--i:${i}`}>
+          <figure>
+            <div class="ph" data-mask style={`--i:${i}`}>
+              <Image src={projectPhoto(photo.slug, photo.index)} alt={photo.caption} widths={[400, 640, 900]} sizes="(max-width: 44rem) 100vw, 33vw" />
+            </div>
+            <figcaption class="label">{photo.caption}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .imaging { background: var(--white); }
+  .imaging-explorer { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); border: 1px solid var(--line); }
+  .model-panel { min-width: 0; background: #edf2f7; display: flex; flex-direction: column; overflow: clip; }
+  .model-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding: 1.5rem 1.75rem 0; position: relative; z-index: 1; }
+  .model-kicker { font-size: 0.625rem; color: var(--brand); display: flex; align-items: center; gap: 0.5rem; }
+  .model-kicker > span { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .overview { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.9rem; min-height: 44px; border: 1px solid var(--line); background: transparent; color: var(--brand); font-size: 0.75rem; border-radius: 2px; transition: background-color 0.2s, border-color 0.2s; }
+  .overview:hover, .overview[aria-pressed='true'] { background: var(--white); border-color: #9aafc7; }
+  .model-stage { position: relative; isolation: isolate; margin-block: auto; }
+  .model-stage :global(.room-model) { position: relative; z-index: 1; }
+  .model-aura { position: absolute; inset: 8% 10% 15%; background: radial-gradient(ellipse at center, #ffffff 15%, transparent 70%); z-index: -1; }
+  .hotspots { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .hotspot { position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 0.8); border-radius: 50%; background: var(--brand); color: var(--white); box-shadow: 0 3px 12px rgb(9 43 91 / 0.2), 0 0 0 5px rgb(255 255 255 / 0.55); pointer-events: auto; font-family: var(--font-mono); font-size: 0.75rem; transition: background-color 0.25s, color 0.25s, box-shadow 0.25s, scale 0.25s; }
+  .hotspot:hover, .hotspot[aria-pressed='true'] { background: var(--white); color: var(--brand); box-shadow: 0 3px 14px rgb(9 43 91 / 0.2), 0 0 0 5px rgb(9 43 91 / 0.14); scale: 1.08; }
+  .hotspot[aria-pressed='true']::after { content: ''; position: absolute; inset: -8px; border: 1px solid #41658a; border-radius: inherit; }
+  .model-caption { display: flex; align-items: flex-start; gap: 1rem; margin: 0 1.75rem; padding: 1.25rem 0; border-top: 1px solid var(--line); min-height: 7.2rem; }
+  .caption-symbol { color: var(--brand); font-size: 1.6rem; line-height: 1; }
+  .caption-title { font-weight: 600; color: var(--brand); font-size: 0.9375rem; }
+  .caption-text { margin-top: 0.25rem; max-width: 42rem; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
+  .model-note { padding: 0 1.75rem 1.25rem; color: var(--muted); font-size: 0.6875rem; line-height: 1.5; }
+  .explorer-controls { min-width: 0; padding: clamp(1.25rem, 2.5vw, 2.5rem); background: var(--white); border-left: 1px solid var(--line); }
+  .controls-head > .label { font-size: 0.625rem; color: var(--brand); }
+  .controls-head h3 { margin-top: 0.75rem; font-family: var(--font-display); font-size: clamp(1.3rem, 1.6vw, 1.75rem); line-height: 1.2; letter-spacing: -0.025em; color: var(--brand); }
+  .controls-head > p:last-child { color: var(--muted); font-size: 0.8125rem; margin-top: 0.65rem; }
+  .room-legend { display: grid; margin-top: 1.5rem; border-top: 1px solid var(--line); }
+  .room-choice { width: 100%; display: grid; grid-template-columns: 1.75rem 1fr 0.75rem; gap: 0.7rem; align-items: start; min-height: 76px; padding: 1rem 0; text-align: left; color: var(--text); border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; transition: background-color 0.2s; }
+  .choice-number { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--line); color: var(--muted); font-family: var(--font-mono); font-size: 0.6875rem; border-radius: 50%; transition: color 0.2s, background-color 0.2s; }
+  .choice-body { display: grid; gap: 0.25rem; }
+  .choice-title { display: block; font-weight: 600; font-size: 0.875rem; line-height: 1.4; }
+  .choice-location { display: block; color: var(--muted); font-size: 0.75rem; line-height: 1.4; }
+  .choice-detail { display: block; color: var(--muted); font-size: 0.8125rem; line-height: 1.55; padding-top: 0.5rem; }
+  .choice-arrow { color: var(--muted); font-size: 1rem; line-height: 1.7; }
+  .room-choice:hover .choice-title, .room-choice[aria-pressed='true'] .choice-title { color: var(--brand); }
+  .room-choice:hover .choice-number, .room-choice[aria-pressed='true'] .choice-number { color: var(--white); background: var(--brand); border-color: var(--brand); }
+  .room-choice[aria-pressed='true'] .choice-arrow { color: var(--brand); }
+  .model-ready .choice-detail { display: none; }
+  .model-ready .room-choice[aria-pressed='true'] .choice-detail { display: block; }
+  .explorer-footnote { display: flex; gap: 0.6rem; margin-top: 1.5rem; font-size: 0.6875rem; line-height: 1.5; color: var(--muted); }
+  .explorer-footnote > span { color: var(--brand); }
+  .real-projects-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); }
+  .real-projects-head .label { color: var(--brand); font-size: 0.6875rem; }
+  .real-projects-head > span { font-size: 0.8125rem; }
+  .photo-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-m); margin-top: var(--space-m); }
+  .photo-strip figure { display: grid; gap: 0.6rem; }
+  .ph { overflow: hidden; aspect-ratio: 4 / 3; background: var(--paper-2); }
+  .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-strip figcaption { color: var(--muted); font-size: 0.6875rem; line-height: 1.5; }
+  @media (max-width: 62rem) {
+    .imaging-explorer { grid-template-columns: 1fr; }
+    .explorer-controls { border-left: 0; border-top: 1px solid var(--line); }
+    .room-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; }
+    .model-stage { width: 100%; max-width: 850px; align-self: center; }
+    .model-caption { min-height: 6rem; }
+  }
+  @media (max-width: 44rem) {
+    .model-toolbar { padding: 1rem 1rem 0; gap: 0.5rem; }
+    .model-kicker { font-size: 0.5625rem; }
+    .overview { font-size: 0.6875rem; padding-inline: 0.65rem; gap: 0.5rem; }
+    .model-caption { margin-inline: 1rem; gap: 0.6rem; min-height: 8rem; }
+    .model-note { padding-inline: 1rem; }
+    .hotspot { font-size: 0.6875rem; box-shadow: 0 2px 8px rgb(9 43 91 / 0.15), 0 0 0 3px rgb(255 255 255 / 0.6); }
+    .room-legend { grid-template-columns: 1fr; }
+    .photo-strip { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const explorer = document.querySelector<HTMLElement>('[data-room-explorer]');
+  if (explorer) {
+    const controls = [...explorer.querySelectorAll<HTMLButtonElement>('[data-room-target]')];
+    const features = [...explorer.querySelectorAll<SVGGElement>('[data-layer]')];
+    const overview = explorer.querySelector<HTMLButtonElement>('[data-room-overview]')!;
+    const captionTitle = explorer.querySelector<HTMLElement>('[data-room-caption-title]')!;
+    const captionText = explorer.querySelector<HTMLElement>('[data-room-caption-text]')!;
+    const defaultTitle = captionTitle.textContent;
+    const defaultText = captionText.textContent;
+    let selected: string | null = null;
+
+    const show = (id: string | null) => {
+      explorer.classList.toggle('has-active', id !== null);
+      features.forEach(feature => feature.classList.toggle('is-active', feature.dataset.layer === id));
+      controls.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.roomTarget === id)));
+      overview.setAttribute('aria-pressed', String(id === null));
+      const choice = controls.find(button => button.classList.contains('room-choice') && button.dataset.roomTarget === id);
+      captionTitle.textContent = choice?.querySelector('.choice-title')?.textContent ?? defaultTitle;
+      captionText.textContent = choice?.querySelector('.choice-detail')?.textContent ?? defaultText;
+    };
+
+    controls.forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.roomTarget ?? null;
+        selected = selected === id ? null : id;
+        show(selected);
+      });
+    });
+    overview.addEventListener('click', () => { selected = null; show(null); });
+    explorer.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { selected = null; show(null); }
+    });
+    // Essential descriptions remain visible when JavaScript is unavailable.
+    explorer.classList.add('model-ready');
+  }
+</script>
