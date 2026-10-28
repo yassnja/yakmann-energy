@@ -21,3 +21,6 @@ __MACOSX/
 
 # Original company presentation, kept locally
 /PRESENTATION YAKMANN ENERGY - 2026.pdf
+
+# Netlify local project state
+.netlify/

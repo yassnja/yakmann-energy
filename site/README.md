@@ -5,7 +5,7 @@ Site statique (Astro 7, TypeScript, CSS natif) construit à partir de la présen
 
 ## Commandes
 
-Prérequis : Node.js ≥ 22.12 (testé avec 22.22).
+Prérequis : Node.js ≥ 22.22.0.
 
 ```bash
 npm install        # installe les dépendances
@@ -14,7 +14,7 @@ npm run build      # vérification TypeScript (astro check) + build statique dan
 npm run preview    # sert le build de production localement
 ```
 
-Pour activer l'URL canonique et les balises Open Graph absolues, construire avec le domaine définitif :
+Sur Netlify, les URL canoniques et les balises Open Graph utilisent automatiquement le domaine principal fourni dans `URL`. Pour imposer un domaine sur Netlify ou un autre hébergement :
 
 ```bash
 SITE_URL=https://www.votre-domaine.ma npm run build
@@ -49,11 +49,11 @@ Ajouter une réalisation : créer `src/assets/projects/<slug>/01.jpg…`, puis a
 
 ## À compléter avant la mise en production
 
-- **Domaine** : définir `SITE_URL` (canonique, Open Graph, puis éventuellement `@astrojs/sitemap`).
+- **Domaine** : Netlify fournit automatiquement le domaine principal ; `SITE_URL` permet une valeur explicite.
 - **Formulaire** : envoi direct via FormSubmit (https://formsubmit.co), sans ouverture de messagerie.
-  Destinataire de test : `njari.yassine61@gmail.com`, configurable dans `src/data/contact.ts`.
+  Destinataire de test : `njari.yassine61@gmail.com`. La variable de build `PUBLIC_CONTACT_RECIPIENT` remplace la valeur par défaut de `src/data/contact.ts`.
   Envoyer une première demande, puis confirmer le lien FormSubmit reçu par e-mail (vérifier les spams).
-  Avant la production, remplacer le destinataire par `contact@yakmannenergy.com` et activer aussi cette nouvelle adresse.
+  Après création de la boîte Zoho, définir `PUBLIC_CONTACT_RECIPIENT=contact@yakmannenergy.com`, reconstruire et activer cette nouvelle adresse.
   Les demandes transitent par FormSubmit ; en cas d’échec, les champs restent remplis. Une confirmation du service ne garantit pas l’arrivée en boîte de réception.
   Les tests automatiques simulent le service et n’envoient pas d’e-mail. Les coordonnées publiques de l’entreprise sont distinctes du destinataire temporaire de test.
 - **Mentions légales / confidentialité** : à rédiger par l'entreprise.
@@ -65,7 +65,7 @@ Ajouter une réalisation : créer `src/assets/projects/<slug>/01.jpg…`, puis a
 ## Déploiement
 
 Le dossier `dist/` est entièrement statique : Netlify, Vercel, Cloudflare Pages ou tout hébergement
-classique (Apache/Nginx) conviennent. Commande de build : `npm run build`, dossier publié : `dist`.
+classique (Apache/Nginx) conviennent. Sur Netlify, `../netlify.toml` définit la base `site`, la commande `npm run build` et le dossier publié `dist`. Voir le [guide à la racine](../README.md#déployer-sur-netlify).
 
 ## Mouvement et interactions
 

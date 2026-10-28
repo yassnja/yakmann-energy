@@ -35,18 +35,44 @@ La documentation détaillée est disponible dans [site/README.md](site/README.md
 
 Le formulaire utilise [FormSubmit](https://formsubmit.co) pour transmettre les demandes sans ouvrir la messagerie du visiteur.
 
-Le destinataire temporaire des essais est défini dans [`site/src/data/contact.ts`](site/src/data/contact.ts). Après création de la boîte professionnelle, remplacer cette adresse par `contact@yakmannenergy.com`, puis activer le formulaire depuis l’e-mail envoyé par FormSubmit à cette nouvelle adresse.
+Le destinataire temporaire des essais est `njari.yassine61@gmail.com`, avec une valeur par défaut dans [`site/src/data/contact.ts`](site/src/data/contact.ts). Après création de la boîte Zoho, définir la variable de build `PUBLIC_CONTACT_RECIPIENT=contact@yakmannenergy.com` et relancer un déploiement, puis activer le formulaire depuis l’e-mail envoyé par FormSubmit à cette nouvelle adresse.
 
 L’adresse publique affichée sur le site est définie séparément dans [`site/src/data/company.ts`](site/src/data/company.ts).
 
-## Hébergement
+## Déployer sur Netlify
 
-Le build produit un site statique dans **`site/dist/`**. Sur un hébergement qui exécute les commandes à la racine du dépôt :
+Le fichier [netlify.toml](netlify.toml) configure le build du site statique. Aucun adaptateur serveur Astro n’est nécessaire.
 
-- Installation : `npm install`
-- Build : `npm run build`
-- Dossier à publier : `site/dist`
+1. Dans Netlify, importer un projet existant depuis GitHub.
+2. Autoriser l’accès au dépôt privé `yassnja/yakmann-energy`, puis sélectionner ce dépôt et la branche `main`.
+3. Netlify lit le fichier de configuration. Les valeurs attendues sont :
 
-Définir `SITE_URL` avec le domaine de production pour les URL canoniques et les métadonnées de partage.
+| Paramètre | Valeur |
+| --- | --- |
+| Base directory | `site` |
+| Build command | `npm run build` |
+| Publish directory | `dist` (relatif à `site`, donc `site/dist` dans le dépôt) |
+| Node.js | `22.22.0` |
 
-Les dépendances, les sorties de compilation, les configurations locales et la présentation PDF d’origine restent hors du dépôt.
+Netlify installe les dépendances directement dans `site/`, y compris les outils de vérification Astro/TypeScript. Le script `postinstall` de la racine n’est pas utilisé par ce build.
+
+### Variables de build
+
+Aucune variable personnalisée n’est indispensable pour un premier déploiement de test.
+
+| Variable | Utilisation |
+| --- | --- |
+| `SITE_URL` | Facultative. Remplace explicitement le domaine utilisé pour les URL canoniques et les images de partage. Sans cette valeur, le build utilise le domaine principal fourni automatiquement par Netlify dans `URL`. |
+| `PUBLIC_CONTACT_RECIPIENT` | Facultative. Destinataire du formulaire FormSubmit. Par défaut : `njari.yassine61@gmail.com` pour les essais. Après création de la boîte Zoho : `contact@yakmannenergy.com`. |
+
+Définir ces variables dans Netlify avec la portée **Builds** lorsqu’elle est proposée, puis relancer le déploiement après toute modification. Le destinataire figure dans le formulaire livré au navigateur : ce n’est pas un secret ni un mot de passe SMTP.
+
+Pour le développement local, un modèle commenté est fourni dans [site/.env.example](site/.env.example). Les fichiers `.env` locaux restent exclus de Git.
+
+### Résultat du build
+
+Le dossier `site/dist/` contient les pages HTML, les images optimisées et `404.html`. Les pages de réalisations ont leur propre route : aucune redirection globale vers `index.html` n’est ajoutée. Les ressources Astro avec noms empreintés bénéficient d’un cache longue durée.
+
+Les dépendances, les sorties de compilation, les configurations locales et la présentation PDF d’origine restent hors du dépôt. Les paramètres de domaine et la création du projet Netlify se font ensuite dans votre compte Netlify.
+
+Documentation : [Astro sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/astro/) · [Configuration Netlify](https://docs.netlify.com/build/configure-builds/file-based-configuration/).
