@@ -40,28 +40,28 @@ const links = [
       <span class="burger" aria-hidden="true"><span></span><span></span></span>
     </button>
   </div>
-
-  <div class="menu" id="menu-mobile" data-menu hidden>
-    <nav aria-label="Navigation mobile" class="container menu-inner">
-      <ol role="list" class="menu-list">
-        {
-          [...links, { href: '/#contact', label: 'Contact' }].map((l, i) => (
-            <li>
-              <a href={l.href} class="menu-link display" data-menu-link>
-                <span class="label">{String(i + 1).padStart(2, '0')}</span>
-                {l.label}
-              </a>
-            </li>
-          ))
-        }
-      </ol>
-      <div class="menu-contact">
-        <a class="link-underline" href={company.phoneHref}>{company.phone}</a>
-        <a class="link-underline" href={`mailto:${company.email}`}>{company.email}</a>
-      </div>
-    </nav>
-  </div>
 </header>
+
+<div class="menu" id="menu-mobile" data-menu hidden>
+  <nav aria-label="Navigation mobile" class="container menu-inner">
+    <ol role="list" class="menu-list">
+      {
+        [...links, { href: '/#contact', label: 'Contact' }].map((l, i) => (
+          <li>
+            <a href={l.href} class="menu-link display" data-menu-link>
+              <span class="label">{String(i + 1).padStart(2, '0')}</span>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="menu-contact">
+      <a class="link-underline" href={company.phoneHref}>{company.phone}</a>
+      <a class="link-underline" href={`mailto:${company.email}`}>{company.email}</a>
+    </div>
+  </nav>
+</div>
 
 <style>
   .site-header {
@@ -169,10 +169,17 @@ const links = [
 
   .menu {
     position: fixed;
-    inset: var(--header-h) 0 0;
+    inset: var(--header-h) 0 auto;
+    height: calc(100vh - var(--header-h));
+    height: calc(100dvh - var(--header-h));
+    z-index: 49;
     background: var(--paper);
+    color: var(--text);
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+  .menu[hidden] {
+    display: none;
   }
   .menu:not([hidden]) {
     animation: menu-in 0.45s var(--ease-out);
@@ -187,6 +194,7 @@ const links = [
     display: grid;
     gap: var(--space-xl);
     padding-block: var(--space-l) var(--space-xl);
+    padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
   }
   .menu-list {
     border-top: 1px solid var(--line);
@@ -229,15 +237,16 @@ const links = [
   const header = document.querySelector<HTMLElement>('[data-header]')!;
   const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
   const label = header.querySelector<HTMLElement>('[data-menu-label]')!;
-  const menu = header.querySelector<HTMLElement>('[data-menu]')!;
+  const menu = document.getElementById('menu-mobile')!;
 
   // État du header au défilement : fond plein, masqué en descendant, visible en remontant.
   let lastY = window.scrollY;
   let ticking = false;
   const onScroll = () => {
     const y = window.scrollY;
-    header.classList.toggle('is-scrolled', y > 8);
-    header.classList.toggle('is-hidden', y > 400 && y > lastY);
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    header.classList.toggle('is-scrolled', open || y > 8);
+    header.classList.toggle('is-hidden', !open && y > 400 && y > lastY);
     lastY = y;
     ticking = false;
   };
@@ -254,21 +263,38 @@ const links = [
   onScroll();
 
   // Menu mobile
+  let bodyOverflowBeforeMenu = '';
   const setOpen = (open: boolean) => {
+    if (open === !menu.hidden) return;
+    if (open) bodyOverflowBeforeMenu = document.body.style.overflow;
     toggle.setAttribute('aria-expanded', String(open));
     label.textContent = open ? 'Fermer le menu' : 'Ouvrir le menu';
     menu.hidden = !open;
     header.classList.toggle('menu-open', open);
+    header.classList.remove('is-hidden');
     header.classList.toggle('is-scrolled', open || window.scrollY > 8);
-    document.body.style.overflow = open ? 'hidden' : '';
-    if (open) menu.querySelector<HTMLElement>('a')?.focus();
+    document.body.style.overflow = open ? 'hidden' : bodyOverflowBeforeMenu;
+    if (open) menu.querySelector<HTMLElement>('a')?.focus({ preventScroll: true });
   };
   toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menu.hidden) {
+    if (menu.hidden) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
       setOpen(false);
-      toggle.focus();
+      toggle.focus({ preventScroll: true });
+    } else if (e.key === 'Tab') {
+      const focusable = [toggle, ...menu.querySelectorAll<HTMLAnchorElement>('a[href]')];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
   window.matchMedia('(min-width: 62.001rem)').addEventListener('change', (e) => {
